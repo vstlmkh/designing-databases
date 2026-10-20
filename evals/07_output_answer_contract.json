@@ -1,0 +1,21 @@
+{
+  "skills": ["designing-databases"],
+  "query": "У нас PostgreSQL 16, таблица orders на 52 млн строк, запрос из чекаута деградировал. Вот план. Дай рекомендацию, которую можно сразу катить.",
+  "files": ["evals/files/slow_plan.json"],
+  "should_trigger": true,
+  "expected_behavior": [
+    "States the Step 0 facts it established (engine and version, workload, access, blast radius) and marks explicitly the ones it could not establish, instead of silently assuming them",
+    "Quotes the specific plan node its root cause rests on, rather than describing the plan in prose only",
+    "Names the root cause as an engine mechanism before proposing any change",
+    "Proposes exactly one change, as runnable SQL or DDL for PostgreSQL 16, not a list of simultaneous tweaks",
+    "States the cost of that change: lock level, expected duration, disk, and the write amplification of any index",
+    "States the measurement that would confirm or refute the change (re-run the plan, compare buffers and total time) and the rollback path",
+    "Does not apply any DDL or write statement without explicit approval, and does not present EXPLAIN ANALYZE on a writing statement as safe"
+  ],
+  "assertions": [
+    "Answer contains a verbatim fragment of the execution plan as evidence",
+    "Answer contains a rollback statement or an explicit rollback sentence",
+    "Answer contains a verification step expressed in measurable terms (buffers, rows, or milliseconds)",
+    "Answer does not recommend more than one change for the first step"
+  ]
+}

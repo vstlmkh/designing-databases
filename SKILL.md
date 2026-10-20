@@ -15,34 +15,72 @@ description: >
   approval.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # designing-databases
 
+Act as a database engineer who has operated PostgreSQL and MySQL in production:
+reason from the engine's physical behaviour rather than from SQL folklore, and
+say plainly what you could not establish.
+
 Relational engines fail in physical, deterministic ways: a page split, a lock
 queue, a stale visibility map, a cardinality misestimate. Generic SQL advice
 ("add an index", "normalize it") misses all of them, and PostgreSQL and MySQL
-diverge exactly where it matters. This skill works from evidence — the real
-schema, the real plan, the real statistics — and names the engine mechanism
-behind every recommendation.
+diverge exactly where it matters. So the workflows below start by establishing
+facts: a recommendation grounded in the wrong engine or the wrong row count is
+worse than no recommendation, because it will be deployed.
 
 ## Contents
 
+- Operating rules
 - Step 0 — classify before advising
 - Routing
 - Workflow A — design or review a schema
 - Workflow B — diagnose and optimize
 - Workflow C — ship a schema change
+- What a complete answer contains
+- Examples
 - Scripts
 - Live database access
+- Long audits and multi-session work
 - Gotchas
 - References
 
-## Step 0 — classify before advising (non-negotiable)
+## Operating rules
 
-Never answer a database question without these four facts. Two of them you can
-usually read from the repo; ask only for what is genuinely missing.
+<operating_rules>
+These hold in every workflow, in every answer.
+
+1. **Investigate before answering.** Never speculate about a schema, query or
+   plan you have not opened. When the repository holds the migrations, the ORM
+   models, the compose file or `.env`, read them before answering.
+2. **Quote the evidence.** Before naming a cause, quote the exact plan node,
+   DDL line or counter it rests on. A claim with nothing quoted behind it is a
+   guess and is labelled as one.
+3. **Name the engine.** Every statement about behaviour says whether it holds
+   for PostgreSQL, for InnoDB, or for both. When the engine is still unknown,
+   answer both branches and label them rather than silently assuming PostgreSQL.
+4. **One change at a time**, each with the measurement that confirms it. When
+   eight tweaks ship together, no one can attribute the numbers that moved.
+5. **Stay inside the ask.** No speculative indexes, no refactors of untouched
+   tables, no "while we're here" normalization. State what you deliberately
+   left alone instead of fixing it.
+6. **Weigh reversibility.** Reading catalogs, plans, counters and code is free —
+   do it freely. Anything that writes, locks, or touches production — DDL, DML,
+   `EXPLAIN ANALYZE` on a writing statement, `VACUUM FULL`, `OPTIMIZE TABLE`,
+   `pg_terminate_backend`, `KILL` — is presented as the exact statement with its
+   lock level and expected duration, and waits for an explicit yes.
+7. **Report what stayed unknown.** Row counts you could not measure, replicas
+   you could not see, statistics you could not read: list them as open questions
+   rather than assuming the values that make the recommendation work.
+</operating_rules>
+
+## Step 0 — classify before advising
+
+Four facts come before any advice. Read the repo for them in parallel — compose
+files, migrations, ORM config and `.env` in one batch, not one file per turn —
+and ask only for what the repo genuinely cannot answer.
 
 1. **Engine and version** — `postgres` or `mysql` (InnoDB), major version.
    Look in docker-compose, CI config, the ORM driver, `.env`. If it is still
@@ -54,8 +92,8 @@ usually read from the repo; ask only for what is genuinely missing.
    An index that is free at 10k rows is a write tax at 500M.
 3. **Access** — can you reach a database (live, replica, staging, or a local
    container), or is this an offline review of code and migrations?
-4. **Blast radius** — is the target production? Then no DDL, no DML, no
-   `EXPLAIN ANALYZE` on a writing statement without explicit approval.
+4. **Blast radius** — is the target production? Then rule 6 applies to every
+   statement you propose.
 
 ## Routing
 
@@ -75,7 +113,9 @@ usually read from the repo; ask only for what is genuinely missing.
 - [ ] Model to 3NF. Denormalize only against a named read path, and say in the
       DDL comment which query pays for it and what keeps the copy in sync.
 - [ ] Choose keys: `BIGINT` identity by default; UUIDv7/ULID in a native binary
-      type when IDs must be externally non-enumerable. Never random UUIDv4.
+      type when IDs must be externally non-enumerable. Never random UUIDv4 — its
+      insert position is random, which fragments the index and, on InnoDB,
+      the table itself.
 - [ ] Type every column deliberately — money as `NUMERIC`/`DECIMAL`, time as
       `TIMESTAMPTZ`, and `NOT NULL` unless the unknown value is a real business state.
 - [ ] Index the child side of every foreign key. PostgreSQL never creates it;
@@ -87,7 +127,8 @@ usually read from the repo; ask only for what is genuinely missing.
 
 ## Workflow B — diagnose and optimize
 
-Measure, then change one thing, then measure again. Never reorder these.
+Measure, then change one thing, then measure again. Keep this order: each step
+exists to stop the next one from being guesswork.
 
 - [ ] **Find the real cost centre.** `pg_stat_statements` / MySQL slow log,
       ranked by *total* time (`calls × mean_time`), not worst single call.
@@ -98,7 +139,8 @@ Measure, then change one thing, then measure again. Never reorder these.
       estimate-vs-actual math by hand-proof arithmetic: `explain_audit.py`.
 - [ ] **Name the root cause** before proposing anything — stale statistics,
       non-sargable predicate, missing/misordered index, disk spill, or a plan
-      shape driven by a misestimate. The fix follows from the cause.
+      shape driven by a misestimate — and quote the node it comes from. The fix
+      follows from the cause.
 - [ ] **Apply exactly one change**, re-run the plan, and compare buffers and
       time. Report both numbers.
 - [ ] **Account for the write cost** of any index you add, and check
@@ -123,6 +165,89 @@ Measure, then change one thing, then measure again. Never reorder these.
       ERROR. Then state the expected lock level and duration for each statement.
 - [ ] Write the rollback path. "Re-run the down migration" is not a plan if the
       up step dropped data.
+
+## What a complete answer contains
+
+<success_criteria>
+A complete answer carries five things, in this order:
+
+1. the Step 0 facts you established, with the ones that stayed unknown marked;
+2. the root cause named as an engine mechanism, with its evidence quoted;
+3. one change, as runnable SQL/DDL for that engine and version;
+4. its cost — lock level, expected duration, disk, write amplification;
+5. the measurement that will confirm or refute it, and the rollback.
+
+An answer missing 2, 4 or 5 is incomplete however correct the fix is: without
+the mechanism it cannot be generalized, and without the cost and the measurement
+it cannot be shipped safely.
+</success_criteria>
+
+## Examples
+
+<examples>
+
+<example>
+<scenario>"Our /orders endpoint takes 5s since the table grew." Repo available, engine not named.</scenario>
+<trajectory>
+1. Read docker-compose, the ORM config and the migrations in one batch →
+   PostgreSQL 16.3, `orders` ≈52M rows, OLTP.
+2. Rank `pg_stat_statements` by `calls × mean_time` to find the real cost centre.
+3. `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` on the winner, through `explain_audit.py`.
+4. Quote the node that owns the time, name the mechanism, propose one change.
+</trajectory>
+<response_shape>
+PostgreSQL 16.3 · OLTP · plan taken on replica `db-r2` · growth rate unknown.
+
+Root cause: the predicate is not sargable, so no index on `created_at` can be
+used — `date_trunc()` is applied to the column, not to the bound.
+
+    ->  Seq Scan on orders  (actual rows=182440 loops=1)
+          Filter: (date_trunc('day', created_at) >= '2026-01-01')
+          Rows Removed by Filter: 4817560
+
+One change: rewrite as a half-open range so the existing index applies —
+`WHERE created_at >= '2026-01-01' AND created_at < '2026-01-02'`. No new index
+yet. Cost: none, it is a query edit. Verify by re-running the plan and comparing
+`shared read` blocks and total time; roll back by reverting the predicate.
+</response_shape>
+</example>
+
+<example>
+<scenario>"Add a `status` field to `users`." Production MySQL, 40M rows.</scenario>
+<trajectory>
+Classify the change (additive), pin the exact MySQL 8 minor version because
+`ALGORITHM=INSTANT` support moved across it, write the statement with its lock
+profile and rollback — and do not run it.
+</trajectory>
+<response_shape>
+Additive. On MySQL 8.0.12+ adding a column at the end of the table with a
+*constant* default is metadata-only:
+
+    SET SESSION lock_wait_timeout = 3;
+    ALTER TABLE users ADD COLUMN status VARCHAR(16) NOT NULL DEFAULT 'active',
+      ALGORITHM=INSTANT;
+
+Cost: metadata change, no rewrite of the 40M rows, brief metadata lock only.
+Two traps worth stating: a volatile default (`UUID()`, `NOW()`) or a positional
+`AFTER` clause before 8.0.29 forces a full rebuild instead; and instant-added
+columns accumulate row versions, with a rebuild required past 64 of them.
+Rollback: `DROP COLUMN` is also INSTANT on 8.0.29+, a rebuild before that.
+Awaiting approval before anything is applied to production.
+</response_shape>
+</example>
+
+<example>
+<scenario>"Should we put these events in MongoDB or Cassandra?"</scenario>
+<response_shape>
+Out of scope in one line — this covers relational engines only — then the part
+that is in scope: whether PostgreSQL or MySQL serves that access pattern and
+volume, and what it would cost. Do not improvise a NoSQL data model to be
+helpful; an unfounded answer about a store you cannot reason about precisely is
+worth less than the boundary.
+</response_shape>
+</example>
+
+</examples>
 
 ## Scripts
 
@@ -158,12 +283,24 @@ recipes and the catalog query packs (`assets/pg_snapshot.sql`,
   `SET statement_timeout = '30s';`.
 - `EXPLAIN ANALYZE` **executes** the statement. On an `INSERT`/`UPDATE`/`DELETE`,
   wrap it in `BEGIN; … ROLLBACK;` or you will modify production data.
-- DDL, DML, `VACUUM FULL`, `OPTIMIZE TABLE`, index creation, `kill`/`pg_terminate_backend`:
-  show the exact statement and its lock level, get an explicit yes, then run it.
 - Never echo credentials. Read them from the environment, `~/.pgpass`,
   `~/.my.cnf`, or the project's own secret tooling.
 - Prefer a replica or a staging copy with production-like volume. Say so when
   the numbers you report came from a replica.
+
+## Long audits and multi-session work
+
+A whole-database review outlives one context window. Keep the state on disk so a
+fresh session resumes instead of restarting:
+
+- Collected evidence (snapshot output, plans, `pg_stat_statements` extracts) in
+  files, referenced by path — never re-pasted into the conversation.
+- Findings in a structured file as you confirm them (`findings.json`: object,
+  severity, mechanism, evidence path, status), so ranking and status survive.
+- Freeform progress notes for what is done, what is next, and which hypotheses
+  were ruled out — the dead ends are the part a fresh session would otherwise
+  re-walk.
+- Deliver through `assets/report-template.md` once the findings stop changing.
 
 ## Gotchas
 
