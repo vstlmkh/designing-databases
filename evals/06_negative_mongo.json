@@ -1,0 +1,10 @@
+{
+  "skills": ["designing-databases"],
+  "query": "Как лучше спроектировать коллекции в MongoDB для ленты постов — вложенные документы или ссылки?",
+  "files": [],
+  "should_trigger": false,
+  "expected_behavior": [
+    "Does not apply relational normalization, ESR or B+tree reasoning to a document store",
+    "If the skill does load, it states that it covers relational engines only"
+  ]
+}

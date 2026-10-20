@@ -1,0 +1,12 @@
+{
+  "skills": ["designing-databases"],
+  "query": "Добавь поле status в таблицу orders, у нас MySQL 8, таблица на 40 миллионов строк. Миграции на Laravel.",
+  "files": [],
+  "should_trigger": true,
+  "expected_behavior": [
+    "Recognises this as a migration-safety question, not just a DDL snippet",
+    "Uses ALGORITHM=INSTANT / INPLACE, LOCK=NONE and explains the metadata-lock risk",
+    "Adds the column nullable (or with a constant default) rather than NOT NULL with a volatile default, and batches any backfill",
+    "Gives the Laravel-specific commands (make:migration, migrate --pretend) and warns that MySQL commits DDL implicitly, so schema and backfill belong in separate migrations"
+  ]
+}

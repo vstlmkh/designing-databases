@@ -1,0 +1,56 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Sort",
+      "Actual Total Time": 4821.44,
+      "Actual Rows": 50,
+      "Actual Loops": 1,
+      "Plan Rows": 50,
+      "Sort Key": ["o.created_at DESC"],
+      "Sort Method": "external merge",
+      "Sort Space Used": 42160,
+      "Sort Space Type": "Disk",
+      "Shared Hit Blocks": 1200,
+      "Shared Read Blocks": 38400,
+      "Plans": [
+        {
+          "Node Type": "Nested Loop",
+          "Actual Total Time": 4703.10,
+          "Actual Rows": 182440,
+          "Actual Loops": 1,
+          "Plan Rows": 120,
+          "Shared Hit Blocks": 1100,
+          "Shared Read Blocks": 38000,
+          "Plans": [
+            {
+              "Node Type": "Seq Scan",
+              "Relation Name": "orders",
+              "Actual Total Time": 612.33,
+              "Actual Rows": 182440,
+              "Actual Loops": 1,
+              "Plan Rows": 95,
+              "Filter": "(date_trunc('day'::text, created_at) >= '2026-01-01'::date)",
+              "Rows Removed by Filter": 4817560,
+              "Shared Hit Blocks": 100,
+              "Shared Read Blocks": 31000
+            },
+            {
+              "Node Type": "Index Only Scan",
+              "Index Name": "customers_pkey",
+              "Relation Name": "customers",
+              "Actual Total Time": 0.021,
+              "Actual Rows": 1,
+              "Actual Loops": 182440,
+              "Plan Rows": 1,
+              "Heap Fetches": 94210,
+              "Shared Hit Blocks": 1000,
+              "Shared Read Blocks": 7000
+            }
+          ]
+        }
+      ]
+    },
+    "Planning Time": 0.42,
+    "Execution Time": 4824.91
+  }
+]

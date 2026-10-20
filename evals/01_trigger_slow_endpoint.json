@@ -1,0 +1,12 @@
+{
+  "skills": ["designing-databases"],
+  "query": "Наш эндпоинт /orders стал отвечать по 5 секунд после того как таблица выросла. Посмотри, в чём дело.",
+  "files": [],
+  "should_trigger": true,
+  "expected_behavior": [
+    "Establishes the engine and version before giving any advice, rather than assuming PostgreSQL",
+    "Asks for (or obtains) an actual EXPLAIN (ANALYZE, BUFFERS) plan instead of guessing from the SQL text",
+    "Names a root cause mechanism (non-sargable predicate, misordered composite index, stale statistics, disk spill) before proposing a fix",
+    "Proposes one change at a time and states how to verify it"
+  ]
+}

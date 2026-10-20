@@ -1,0 +1,18 @@
+{
+  "skills": ["designing-databases"],
+  "query": "Вот план выполнения запроса, который висит почти 5 секунд. Где именно уходит время и что с этим делать?",
+  "files": ["evals/files/slow_plan.json"],
+  "should_trigger": true,
+  "expected_behavior": [
+    "Runs scripts/explain_audit.py on the plan file",
+    "Attributes time correctly using the loops multiplier instead of reading per-loop actual time as total",
+    "Separates root cause from symptom and proposes a single first change"
+  ],
+  "assertions": [
+    "Identifies the Index Only Scan on customers as the dominant cost (~3.8 s of 4.8 s), NOT the Sort node, by multiplying actual time by 182440 loops",
+    "Notes that the Index Only Scan is doing 94210 heap fetches and attributes that to a stale visibility map / autovacuum lag",
+    "Identifies the Seq Scan on orders as non-sargable because of date_trunc() on created_at and proposes a half-open range rewrite",
+    "Notes the 1920x row misestimate and recommends ANALYZE before adding any index",
+    "Notes the external merge sort spilling to disk and mentions work_mem is per operation"
+  ]
+}

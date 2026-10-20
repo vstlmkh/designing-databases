@@ -1,0 +1,19 @@
+{
+  "skills": ["designing-databases"],
+  "query": "Отревьюь эту схему перед тем как мы её задеплоим в продакшн на PostgreSQL. Что здесь сломается под нагрузкой?",
+  "files": ["evals/files/legacy_schema.sql"],
+  "should_trigger": true,
+  "expected_behavior": [
+    "Runs scripts/schema_audit.py rather than eyeballing the DDL",
+    "Explains each finding in terms of the engine mechanism, not as a style preference",
+    "Prioritises findings by impact and gives concrete corrected DDL"
+  ],
+  "assertions": [
+    "Report names the random UUIDv4 primary key on customers as a problem and explains page splits / index bloat",
+    "Report flags payments.order_id as a foreign key with no index",
+    "Report flags orders.total and payments.amount as money stored in double precision",
+    "Report identifies idx_orders_customer as redundant with idx_orders_customer_status via the leftmost prefix rule",
+    "Report identifies product_attributes as an EAV antipattern",
+    "Report does NOT recommend dropping an index without saying to verify zero scans on replicas first"
+  ]
+}

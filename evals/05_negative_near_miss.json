@@ -1,0 +1,10 @@
+{
+  "skills": ["designing-databases"],
+  "query": "Сделай индексную страницу для нашего сайта на Next.js и настрой поиск по ней через Algolia.",
+  "files": [],
+  "should_trigger": false,
+  "expected_behavior": [
+    "Does not load the database skill: 'index' here is a web page and a SaaS search service, not a database index",
+    "No relational schema, EXPLAIN or migration advice appears"
+  ]
+}
