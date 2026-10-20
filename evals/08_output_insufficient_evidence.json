@@ -1,0 +1,19 @@
+{
+  "skills": ["designing-databases"],
+  "query": "У нас запрос по таблице orders стал тормозить. Какой индекс добавить? Доступа к базе и репозиторию сейчас нет, плана тоже нет.",
+  "files": [],
+  "should_trigger": true,
+  "expected_behavior": [
+    "States plainly that it does not have enough information to name an index, instead of producing a confident CREATE INDEX for an unseen query",
+    "Lists exactly what is missing and would settle it: the engine and version, the query text, an actual EXPLAIN (ANALYZE, BUFFERS) plan, row counts and the existing indexes",
+    "Does not invent a row count, a column list, a plan node, a config default or an engine version",
+    "If it offers anything concrete, it is the commands the user can run to collect that evidence, or clearly labelled conditional branches ('if PostgreSQL … / if InnoDB …'), not a recommendation presented as the answer",
+    "Any behaviour claim that depends on a minor version is stated as a condition rather than asserted for an unknown version"
+  ],
+  "assertions": [
+    "Answer contains an explicit statement of insufficient information",
+    "Answer contains a list of the evidence it needs",
+    "Answer does not contain an unconditional CREATE INDEX recommendation for the unseen query",
+    "Answer contains no numeric row count, size or duration estimate for this table"
+  ]
+}

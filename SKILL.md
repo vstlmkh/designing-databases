@@ -15,7 +15,7 @@ description: >
   approval.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # designing-databases
@@ -55,9 +55,13 @@ These hold in every workflow, in every answer.
 1. **Investigate before answering.** Never speculate about a schema, query or
    plan you have not opened. When the repository holds the migrations, the ORM
    models, the compose file or `.env`, read them before answering.
-2. **Quote the evidence.** Before naming a cause, quote the exact plan node,
-   DDL line or counter it rests on. A claim with nothing quoted behind it is a
-   guess and is labelled as one.
+2. **Quote the evidence, before you reason about it.** On anything large — a
+   full schema dump, a long plan, a slow log — first extract the exact lines
+   that bear on the question, verbatim and numbered, then reason only from that
+   extract. If the artifact contains nothing relevant, write "No relevant lines
+   found in <artifact>" and say what would be needed instead of reasoning from
+   memory. A claim with nothing quoted behind it is a guess and is labelled as
+   one.
 3. **Name the engine.** Every statement about behaviour says whether it holds
    for PostgreSQL, for InnoDB, or for both. When the engine is still unknown,
    answer both branches and label them rather than silently assuming PostgreSQL.
@@ -71,9 +75,19 @@ These hold in every workflow, in every answer.
    `EXPLAIN ANALYZE` on a writing statement, `VACUUM FULL`, `OPTIMIZE TABLE`,
    `pg_terminate_backend`, `KILL` — is presented as the exact statement with its
    lock level and expected duration, and waits for an explicit yes.
-7. **Report what stayed unknown.** Row counts you could not measure, replicas
-   you could not see, statistics you could not read: list them as open questions
-   rather than assuming the values that make the recommendation work.
+7. **Report what stayed unknown, and say "I don't know".** Row counts you could
+   not measure, replicas you could not see, statistics you could not read: list
+   them as open questions rather than assuming the values that make the
+   recommendation work. "I don't have enough information to assess this — give
+   me X and Y and I will" is a complete, acceptable answer; a confident
+   recommendation resting on an invented row count is not.
+8. **Answer from the artifact, not from recollection.** When DDL, a plan, a
+   config or source is in front of you, it overrides anything you remember about
+   "how this usually looks". Engine behaviour that turns on a minor version
+   (`ALGORITHM=INSTANT`, `ADD COLUMN` rewrites, index-skip scans) is stated as
+   the condition — "on 8.0.29+ …, before that …" — unless you have actually read
+   the version. Never invent a version number, a counter value, a config default
+   you did not read, or a plan node that was not in the output.
 </operating_rules>
 
 ## Step 0 — classify before advising
@@ -181,6 +195,22 @@ An answer missing 2, 4 or 5 is incomplete however correct the fix is: without
 the mechanism it cannot be generalized, and without the cost and the measurement
 it cannot be shipped safely.
 </success_criteria>
+
+### Audit the draft before sending it
+
+Re-read your own answer and check every factual claim — a row count, a plan
+node, a lock level, a version threshold, a config default — against the evidence
+you actually have:
+
+- backed by a quote from the artifact → keep it, with the quote visible;
+- backed by an engine mechanism you can name but not quote here → keep it, and
+  name the mechanism rather than presenting it as a measurement;
+- backed by neither → delete it, or restate it as a hypothesis with the one
+  check that would settle it ("if `Heap Fetches` is high, then …; run X").
+
+Numbers are the usual casualty: no estimated duration, size, or row count
+survives this pass unless it was measured or is shown as the arithmetic that
+produced it.
 
 ## Examples
 
