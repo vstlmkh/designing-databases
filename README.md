@@ -1,3 +1,15 @@
+<p align="center">
+  <img src=".github/banner.svg" alt="designing-databases — an Agent Skill for PostgreSQL and MySQL/InnoDB" width="100%">
+</p>
+
+<p align="center">
+  <a href="LICENSE.md"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-0f766e"></a>
+  <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&logoColor=white">
+  <img alt="PostgreSQL 13+" src="https://img.shields.io/badge/PostgreSQL-13%2B-4169e1?logo=postgresql&logoColor=white">
+  <img alt="MySQL 8.0+" src="https://img.shields.io/badge/MySQL-8.0%2B-00758f?logo=mysql&logoColor=white">
+  <img alt="Agent Skill" src="https://img.shields.io/badge/Agent%20Skill-SKILL.md-d97706">
+</p>
+
 # designing-databases
 
 An [Agent Skill](https://code.claude.com/docs/en/skills) for designing, auditing

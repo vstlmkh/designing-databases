@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="320" viewBox="0 0 1280 320" role="img" aria-label="designing-databases — an Agent Skill for PostgreSQL and MySQL/InnoDB">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a1020"/>
+      <stop offset="55%" stop-color="#101d33"/>
+      <stop offset="100%" stop-color="#15293f"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="320" rx="16" fill="url(#bg)"/>
+  <rect width="1280" height="320" rx="16" fill="url(#fade)"/>
+  <rect x="0" y="0" width="6" height="320" rx="3" fill="url(#accent)"/>
+
+  <!-- left: wordmark -->
+  <g font-family="ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace">
+    <text x="72" y="86" font-size="15" letter-spacing="4.5" fill="#5eead4" opacity="0.85">AGENT SKILL</text>
+    <text x="72" y="152" font-size="52" font-weight="700" fill="#f1f5f9">designing-databases</text>
+    <text x="72" y="196" font-size="22" fill="#7dd3fc">PostgreSQL · MySQL/InnoDB</text>
+  </g>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+    <text x="72" y="238" font-size="19" fill="#94a3b8">schema &amp; key design · index strategy · EXPLAIN diagnosis</text>
+    <text x="72" y="266" font-size="19" fill="#94a3b8">locking &amp; isolation · zero-downtime migrations</text>
+  </g>
+
+  <!-- right: B+tree motif -->
+  <g stroke="#38bdf8" stroke-opacity="0.45" stroke-width="1.5" fill="none">
+    <path d="M1032 94 L936 140 M1032 94 L1128 140"/>
+    <path d="M936 174 L888 220 M936 174 L984 220"/>
+    <path d="M1128 174 L1080 220 M1128 174 L1176 220"/>
+  </g>
+  <g fill="#0f2033" stroke="url(#accent)" stroke-width="1.5">
+    <rect x="962" y="60" width="140" height="34" rx="6"/>
+    <rect x="876" y="140" width="120" height="34" rx="6"/>
+    <rect x="1068" y="140" width="120" height="34" rx="6"/>
+    <rect x="850" y="220" width="76" height="34" rx="6"/>
+    <rect x="946" y="220" width="76" height="34" rx="6"/>
+    <rect x="1042" y="220" width="76" height="34" rx="6"/>
+    <rect x="1138" y="220" width="76" height="34" rx="6"/>
+  </g>
+  <g fill="#5eead4" fill-opacity="0.55">
+    <rect x="976" y="74" width="46" height="6" rx="3"/><rect x="1030" y="74" width="58" height="6" rx="3"/>
+    <rect x="890" y="154" width="38" height="6" rx="3"/><rect x="936" y="154" width="46" height="6" rx="3"/>
+    <rect x="1082" y="154" width="38" height="6" rx="3"/><rect x="1128" y="154" width="46" height="6" rx="3"/>
+  </g>
+  <g fill="#7dd3fc" fill-opacity="0.40">
+    <rect x="862" y="234" width="52" height="6" rx="3"/>
+    <rect x="958" y="234" width="52" height="6" rx="3"/>
+    <rect x="1054" y="234" width="52" height="6" rx="3"/>
+    <rect x="1150" y="234" width="52" height="6" rx="3"/>
+  </g>
+</svg>
