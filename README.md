@@ -7,6 +7,7 @@
   <img alt="Python 3.9+" src="https://img.shields.io/badge/python-3.9%2B-3776ab?logo=python&logoColor=white">
   <img alt="PostgreSQL 13+" src="https://img.shields.io/badge/PostgreSQL-13%2B-4169e1?logo=postgresql&logoColor=white">
   <img alt="MySQL 8.0+" src="https://img.shields.io/badge/MySQL-8.0%2B-00758f?logo=mysql&logoColor=white">
+  <a href="https://www.npmjs.com/package/@vstlmkh/designing-databases"><img alt="npm" src="https://img.shields.io/npm/v/@vstlmkh/designing-databases?logo=npm&color=cb3837"></a>
   <img alt="Agent Skill" src="https://img.shields.io/badge/Agent%20Skill-SKILL.md-d97706">
 </p>
 
@@ -40,8 +41,14 @@ approval.
 
 ## Install
 
-Clone into your skills directory — personal (`~/.claude/skills/`) or project
-(`.claude/skills/`):
+```bash
+npx @vstlmkh/designing-databases install            # ~/.claude/skills/
+npx @vstlmkh/designing-databases install --project  # ./.claude/skills/
+```
+
+Other commands: `uninstall`, `where`; flags `--dir <path>` and `--force`.
+
+Or clone it directly:
 
 ```bash
 git clone git@github.com:vstlmkh/designing-databases.git \

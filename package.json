@@ -1,0 +1,51 @@
+{
+  "name": "@vstlmkh/designing-databases",
+  "version": "1.2.0",
+  "description": "Agent Skill for designing, auditing and tuning relational databases on PostgreSQL and MySQL/InnoDB — schema design, index strategy, EXPLAIN-plan diagnosis, locking, and zero-downtime migrations.",
+  "keywords": [
+    "agent-skill",
+    "claude",
+    "claude-code",
+    "skill",
+    "postgresql",
+    "mysql",
+    "innodb",
+    "database",
+    "schema-design",
+    "index",
+    "explain",
+    "query-tuning",
+    "migrations"
+  ],
+  "license": "MIT",
+  "author": "Vladislav Stelmakh (vstlmkh)",
+  "homepage": "https://github.com/vstlmkh/designing-databases#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vstlmkh/designing-databases.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vstlmkh/designing-databases/issues"
+  },
+  "type": "commonjs",
+  "bin": {
+    "designing-databases": "bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "SKILL.md",
+    "references/",
+    "scripts/",
+    "!scripts/__pycache__/",
+    "!**/*.pyc",
+    "assets/",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
