@@ -13,8 +13,10 @@
 
 # designing-databases
 
-An [Agent Skill](https://code.claude.com/docs/en/skills) for designing, auditing
-and tuning relational databases on **PostgreSQL** and **MySQL/InnoDB**.
+An [Agent Skill](https://agentskills.io/specification) for [Claude Code](https://code.claude.com/docs/en/skills)
+and [Kimi Code](https://www.kimi.com/code/docs/en/kimi-code-cli/customization/skills.html),
+for designing, auditing and tuning relational databases on **PostgreSQL** and
+**MySQL/InnoDB**.
 
 Generic SQL advice ("add an index", "normalize it") misses how relational
 engines actually fail — a page split, a lock queue, a stale visibility map, a
@@ -41,24 +43,37 @@ approval.
 
 ## Install
 
+Claude Code remains the default, so existing install commands keep working:
+
 ```bash
-npx @vstlmkh/designing-databases install            # ~/.claude/skills/
-npx @vstlmkh/designing-databases install --project  # ./.claude/skills/
+npx @vstlmkh/designing-databases install                    # ~/.claude/skills/
+npx @vstlmkh/designing-databases install --project          # ./.claude/skills/
+npx @vstlmkh/designing-databases install --agent kimi       # ~/.kimi-code/skills/
+npx @vstlmkh/designing-databases install --agent kimi --project  # ./.kimi-code/skills/
 ```
 
-Other commands: `uninstall`, `where`; flags `--dir <path>` and `--force`.
+For a custom Kimi Code data root, the installer honors `KIMI_CODE_HOME` and
+installs into `$KIMI_CODE_HOME/skills/`. Use `--agent claude` to select Claude
+explicitly. Other commands: `uninstall`, `where`; flags `--dir <path>` and
+`--force`.
 
 Or clone it directly:
 
 ```bash
+# Claude Code
 git clone git@github.com:vstlmkh/designing-databases.git \
   ~/.claude/skills/designing-databases
+
+# Kimi Code
+git clone git@github.com:vstlmkh/designing-databases.git \
+  ~/.kimi-code/skills/designing-databases
 ```
 
 The skill activates on its own when a conversation turns to schema design,
 indexes, slow queries or migrations — including when the database is never
 named and the user only says "this endpoint got slow" or "the deploy locked
-everything".
+everything". You can also invoke it manually as `/designing-databases` in
+Claude Code or `/skill:designing-databases` in Kimi Code.
 
 ## Bundled scripts
 

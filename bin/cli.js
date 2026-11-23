@@ -18,8 +18,9 @@ Usage:
   npx @vstlmkh/designing-databases where [options]
 
 Options:
-  --user          install into ~/.claude/skills (default)
-  --project       install into ./.claude/skills
+  --agent <name>  target agent: claude (default) or kimi
+  --user          install into the agent's user skills directory (default)
+  --project       install into the agent's project skills directory
   --dir <path>    install into <path>/${SKILL_NAME}
   --force         overwrite an existing installation
   -h, --help      show this help
@@ -27,11 +28,14 @@ Options:
 }
 
 function parseArgs(argv) {
-  const opts = { command: null, scope: 'user', dir: null, force: false, help: false };
+  const opts = { command: null, agent: 'claude', scope: 'user', dir: null, force: false, help: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-h' || a === '--help') opts.help = true;
-    else if (a === '--user') opts.scope = 'user';
+    else if (a === '--agent') {
+      opts.agent = argv[++i];
+      if (!['claude', 'kimi'].includes(opts.agent)) throw new Error('--agent must be claude or kimi');
+    } else if (a === '--user') opts.scope = 'user';
     else if (a === '--project') opts.scope = 'project';
     else if (a === '--force') opts.force = true;
     else if (a === '--dir') {
@@ -46,6 +50,11 @@ function parseArgs(argv) {
 
 function skillsRoot(opts) {
   if (opts.dir) return path.resolve(opts.dir);
+  if (opts.agent === 'kimi') {
+    if (opts.scope === 'project') return path.resolve(process.cwd(), '.kimi-code', 'skills');
+    const kimiHome = process.env.KIMI_CODE_HOME || path.join(os.homedir(), '.kimi-code');
+    return path.resolve(kimiHome, 'skills');
+  }
   if (opts.scope === 'project') return path.resolve(process.cwd(), '.claude', 'skills');
   return path.join(os.homedir(), '.claude', 'skills');
 }
@@ -76,7 +85,7 @@ function install(opts) {
     if (fs.existsSync(src)) copy(src, path.join(target, item));
   }
   console.log(`Installed ${SKILL_NAME} to ${target}`);
-  console.log('Restart your agent session to pick the skill up.');
+  console.log('Kimi Code reloads its skill catalog automatically; restart Claude Code if the skill does not appear.');
 }
 
 function uninstall(opts) {

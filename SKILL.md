@@ -1,21 +1,21 @@
 ---
 name: designing-databases
 description: >
-  Design, audit and tune relational databases on PostgreSQL and MySQL/InnoDB —
-  table and key design, index strategy, slow-query and EXPLAIN-plan diagnosis,
-  transaction isolation and locking, and zero-downtime migrations in any
-  framework (Alembic, Django, Laravel, Doctrine, Prisma, TypeORM, Knex, Drizzle,
-  Flyway, Liquibase, Atlas, golang-migrate). Use when the user wants to model
-  tables, pick primary keys or column types, decide which index to add or drop,
-  find out why a query or endpoint became slow, resolve deadlocks, lock waits,
-  bloat or replication lag, or write and review a schema change — including when
-  they never name the database and only say "this endpoint got slow", "add a
-  field to this table", "the deploy locked everything" or "which index do we
-  need". Not for NoSQL stores, and it never applies DDL without explicit
-  approval.
+  Use when designing, auditing or tuning PostgreSQL or MySQL/InnoDB — table and
+  key design, index strategy, slow-query and EXPLAIN-plan diagnosis, transaction
+  isolation and locking, and zero-downtime migrations in any framework (Alembic,
+  Django, Laravel, Doctrine, Prisma, TypeORM, Knex, Drizzle, Flyway, Liquibase,
+  Atlas, golang-migrate). Trigger for modeling tables, choosing keys or column
+  types, adding or dropping indexes, slow queries or endpoints, deadlocks, lock
+  waits, bloat, replication lag, and schema changes, even when the database is
+  not named and the user only says "this endpoint got slow", "add a field to
+  this table", "the deploy locked everything", "which index do we need",
+  "эндпоинт стал тормозить", "добавь поле в таблицу" or "какой индекс нужен".
+  Not for NoSQL stores; never applies DDL without explicit approval.
 license: MIT
+compatibility: Supports Claude Code and Kimi Code. Bundled scripts require Python 3.9+.
 metadata:
-  version: "1.2.0"
+  version: "1.3.0"
 ---
 
 # designing-databases
@@ -23,6 +23,11 @@ metadata:
 Act as a database engineer who has operated PostgreSQL and MySQL in production:
 reason from the engine's physical behaviour rather than from SQL folklore, and
 say plainly what you could not establish.
+
+Resolve bundled paths from the directory containing this `SKILL.md`. Kimi Code
+exposes it as `${KIMI_SKILL_DIR}` and Claude Code as `${CLAUDE_SKILL_DIR}`; use
+the appropriate absolute path when running scripts or loading references from
+another working directory.
 
 Relational engines fail in physical, deterministic ways: a page split, a lock
 queue, a stale visibility map, a cardinality misestimate. Generic SQL advice
